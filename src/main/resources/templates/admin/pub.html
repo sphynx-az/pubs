@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:with="http://www.thymeleaf.org/extras/with"
+      layout:decorate="~{adminBase}"
+>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pub Page</title>
+    <script>
+        $(document).ready(function () {
+            $(".edit").on('click', function () {
+                var id = $(this).attr('data');
+                console.log(id)
+                $("#id").val(id);
+                $.ajax({
+                    url: "/rest/getPubData/" + id,
+                    success: function (response) {
+                        $("#name").val(response.name)
+                        $("#location").val(response.location)
+                        $("#instagram").val(response.instagramUrl)
+                        $("#facebook").val(response.fbUrl)
+                        $("#email").val(response.email)
+                        $("#phone").val(response.phone)
+                        $("#about").val(response.about)
+                    }
+                })
+
+            })
+            $(".delete").on('click', function () {
+                var id = $(this).attr('data');
+                $("#pubId").val(id)
+            })
+        })
+    </script>
+</head>
+<body layout:fragment="adminContent">
+<div class="page-container">
+    <div class="container">
+        <div class="row">
+            <div class="col col-12">
+                <form action="/adminPanel/pub/add" method="post" th:object="${pub}">
+                    <div class="row mt-5">
+                        <div class=" col-12">
+                            <label>Name</label>
+                            <br>
+                            <input type="text" placeholder="pub name" name="name" class="form-control " required>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class=" col-12">
+                            <label>Location</label> <br>
+
+                            <input type="text" placeholder="pub location" name="location" class="form-control "
+                                   required>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class=" col col-md-3 col-sm-12">
+                            <label>Facebook</label> <br>
+
+                            <input type="url" placeholder="facebook url" name="fbUrl" class="form-control " required>
+                        </div>
+                        <div class="col col-md-3 col-sm-12">
+                            <label>Instagram</label> <br>
+
+                            <input type="url" placeholder="instagram url" name="instagramUrl" class="form-control "
+                                   required>
+                        </div>
+                        <div class=" col col-md-3 col-sm-12">
+                            <label>Phone number</label> <br>
+                            <input type="number" placeholder="phone number" name="phone" class="form-control " required>
+                        </div>
+                        <div class="col col-md-3 col-sm-12">
+                            <label>Email</label> <br>
+
+                            <input type="email" placeholder="email" name="email" class="form-control " required>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class=" col col-12">
+                            <label>About</label> <br>
+                            <textarea class="form-control" name="about" rows="5" required></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col col-12">
+                            <input type="submit" class="btn btn-success btn-block" value="Save">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col col-12">
+                <table class="table table-dark">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>About</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Facebook</th>
+                        <th>Instagram</th>
+                        <th>Options</th>
+                    </tr>
+                    </thead>
+                    <tbody th:each="p :${pubs}">
+                    <td></td>
+                    <td th:text="${p?.name}">Name</td>
+                    <td th:text="${p?.location}">Location</td>
+                    <td th:text="${p?.about?.substring(0,10)}">About</td>
+                    <td th:text="${p?.email}">Email</td>
+                    <td th:text="${p?.phone}">Phone</td>
+                    <td th:text="${p?.fbUrl}"> Facebook</td>
+                    <td th:text="${p?.instagramUrl}">Instagram</td>
+                    <td>
+                        <button type="submit" class="btn btn-warning edit" data-toggle="modal"
+                                th:data="${p.id}"
+                                data-target="#updateModal" title="Edit"><i
+                                class="fa fa-edit"></i></button>
+                        <button class="btn btn-danger delete" data-toggle="modal"
+                                th:data="${p.id}"
+                                data-target="#deleteModal" title="Delete"><i
+                                class="fa fa-trash"></i></button>
+                    </td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal  fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModal"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Leauge Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="/adminPanel/pub/add" class="" autocomplete="off">
+                <div class="modal-body">
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Name</label>
+                            <input class="form-control" type="text" name="name" id="name">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Location</label>
+                            <input class="form-control" type="text" name="location" id="location">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Instagram</label>
+                            <input class="form-control" type="text" name="instagramUrl" id="instagram">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Facebook</label>
+                            <input class="form-control" type="text" name="fbUrl" id="facebook">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Email</label>
+                            <input class="form-control" type="text" name="email" id="email">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>Phone</label>
+                            <input class="form-control" type="text" name="phone" id="phone">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col col-12">
+                            <label>About</label>
+                            <textarea class="form-control" type="text" name="about" id="about"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" id="id" name="id" value="0">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Match Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure?</p>
+            </div>
+            <form action="/adminPanel/pub/delete">
+                <input type="hidden" name="id" id="pubId" value="0">
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
